@@ -10,9 +10,9 @@ class Customer
         $this->conn = $db;
     }
 
-    public function listContact()
+    public function listCustomer()
     {
-        $sqlQuery = "SELECT * FROM " . $this->customerTable . "ORDER BY id ASC";
+        $sqlQuery = "SELECT * FROM " . $this->customerTable;
 
         $stmt = $this->conn->prepare($sqlQuery);
         $stmt->execute();
@@ -28,12 +28,10 @@ class Customer
             $rows[] = $customer['company'];
             $rows[] = $customer['address'];
             $rows[] = $customer['city'];
-            $rows[] = $customer['state'];
             $rows[] = $customer['country'];
             $rows[] = $customer['zip'];
             $rows[] = $customer['phone'];
             $rows[] = $customer['email'];
-            $rows[] = $customer['website'];
             $rows[] = $customer['create_date'];
             $rows[] = '<button type="button" name="update" id="' . $customer["customer_nr"] . '" class="btn btn-warning btn-xs update"><span class="glyphicon glyphicon-edit" title="Edit"></span></button>';
             $rows[] = '<button type="button" name="delete" id="' . $customer["customer_nr"] . '" class="btn btn-danger btn-xs delete" ><span class="glyphicon glyphicon-remove" title="Delete"></span></button>';
@@ -55,27 +53,86 @@ class Customer
         if ($this->first_name) {
 
             $stmt = $this->conn->prepare("
-			INSERT INTO " . $this->customerTable . "(`first_name`, `last_name`, `company`, `address`, `city`, `state`, `country`, `zip`, `phone`, `email`, `website`, `create_date`)
-			VALUES(?,?,?,?,?,?)");
+			INSERT INTO " . $this->customerTable . "(`first_name`, `last_name`, `company`, `address`, `city`, `country`, `zip`, `phone`, `email`)
+			VALUES(?,?,?,?,?,?,?,?,?)");
 
             $this->first_name = htmlspecialchars(strip_tags($this->first_name));
             $this->last_name = htmlspecialchars(strip_tags($this->last_name));
             $this->company = htmlspecialchars(strip_tags($this->company));
             $this->address = htmlspecialchars(strip_tags($this->address));
             $this->city = htmlspecialchars(strip_tags($this->city));
-            $this->state = htmlspecialchars(strip_tags($this->state));
             $this->country = htmlspecialchars(strip_tags($this->country));
             $this->zip = htmlspecialchars(strip_tags($this->zip));
             $this->phone = htmlspecialchars(strip_tags($this->phone));
             $this->email = htmlspecialchars(strip_tags($this->email));
-            $this->website = htmlspecialchars(strip_tags($this->website));
-            $this->create_date = htmlspecialchars(strip_tags($this->create_date));
 
-            $stmt->bind_param("ssssssssiisss", $this->first_name, $this->last_name, $this->company, $this->address, $this->city, $this->state, $this->country, $this->zip, $this->phone, $this->email, $this->website, $this->create_date);
+            $stmt->bind_param("ssssssiis", $this->first_name, $this->last_name, $this->company, $this->address, $this->city, $this->country, $this->zip, $this->phone, $this->email);
 
             if ($stmt->execute()) {
                 return true;
             }
         }
+        return false;
+    }
+
+    public function getCustomer()
+    {
+        if ($this->customer_nr) {
+            $sqlQuery = "
+			SELECT `customer_nr`, `first_name`, `last_name`, `company`, `address`, `city`, `country`, `zip`, `phone`, `email` 
+			FROM " . $this->customerTable . "
+			WHERE `customer_nr` = ?";
+            $stmt = $this->conn->prepare($sqlQuery);
+            $stmt->bind_param("i", $this->customer_nr);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $record = $result->fetch_assoc();
+            echo json_encode($record);
+        }
+    }
+
+    public function update()
+    {
+        if ($this->customer_nr) {
+            $stmt = $this->conn->prepare("
+			UPDATE " . $this->customerTable . " 
+			SET first_name = ?, last_name = ?, company = ?, address = ?, city = ?, country = ?, zip = ?, phone = ?, email = ?
+			WHERE customer_nr = ?");
+            $this->first_name = htmlspecialchars(strip_tags($this->first_name));
+            $this->last_name = htmlspecialchars(strip_tags($this->last_name));
+            $this->company = htmlspecialchars(strip_tags($this->company));
+            $this->address = htmlspecialchars(strip_tags($this->address));
+            $this->city = htmlspecialchars(strip_tags($this->city));
+            $this->country = htmlspecialchars(strip_tags($this->country));
+            $this->zip = htmlspecialchars(strip_tags($this->zip));
+            $this->phone = htmlspecialchars(strip_tags($this->phone));
+            $this->email = htmlspecialchars(strip_tags($this->email));
+
+            $stmt->bind_param("ssssssiisi", $this->first_name, $this->last_name, $this->company, $this->address, $this->city, $this->country, $this->zip, $this->phone, $this->email, $this->customer_nr);
+
+            if ($stmt->execute()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function delete()
+    {
+        if ($this->customer_nr) {
+
+            $stmt = $this->conn->prepare("
+				DELETE FROM " . $this->customerTable . " 
+				WHERE customer_nr = ?");
+
+            $this->customer_nr = htmlspecialchars(strip_tags($this->customer_nr));
+
+            $stmt->bind_param("i", $this->customer_nr);
+
+            if ($stmt->execute()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

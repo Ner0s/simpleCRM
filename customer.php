@@ -10,8 +10,6 @@ include_once 'config/Database.php';
 <?php include('inc/container.php'); ?>
 <div class="container" style="background-color:#f4f3ef;">
     <h2>SimpleCRM</h2>
-    <br>
-    <h4>Customer</h4>
     <div>
         <div class="panel-heading">
             <div class="row">
@@ -23,6 +21,14 @@ include_once 'config/Database.php';
                                 class="glyphicon glyphicon-plus"></span></button>
                 </div>
             </div>
+        </div>
+        <div>
+            <table>
+                <tr id="filter_global">
+                    <td>Search: </td>
+                    <td><input type="text" class="global_filter" id="global_filter"></td>
+                </tr>
+            </table>
         </div>
         <table id="customerListing" class="table table-bordered table-striped">
             <thead>

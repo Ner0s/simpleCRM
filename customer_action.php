@@ -29,7 +29,13 @@ if(!empty($_POST['action']) && $_POST['action'] == 'getCustomer') {
     $customer->getCustomer();
 }
 
+if(!empty($_POST['action']) && $_POST['action'] == 'findCustomer') {
+    $customer->search_query = $_POST["search_query"];
+    $customer->findCustomer();
+}
+
 if(!empty($_POST['action']) && $_POST['action'] == 'updateCustomer') {
+    $customer->customer_nr = $_POST["id"];
     $customer->first_name = $_POST["first_name"];
     $customer->last_name = $_POST["last_name"];
     $customer->company = $_POST["company"];

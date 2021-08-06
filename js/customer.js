@@ -8,7 +8,6 @@ $(document).ready(function () {
         "ordering": false,
         "responsive": true,
         'serverMethod': 'post',
-        // "order": [],
         "ajax": {
             url: "customer_action.php",
             type: "POST",
@@ -18,7 +17,6 @@ $(document).ready(function () {
         "columnDefs": [
             {
                 "targets": [0, 10, 11, 12],
-                // "orderable": false,
             },
         ],
         "pageLength": 10
@@ -34,9 +32,7 @@ $(document).ready(function () {
                 data: {action: action, search_query: search_query},
                 dataType: "json",
                 success: function (data) {
-                    console.log("find success", data);
                     customerRecords.clear().rows.add(data).draw();
-                    // customerRecords.ajax.reload();
                 }
             });
         }

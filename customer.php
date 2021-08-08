@@ -1,7 +1,3 @@
-<?php
-include_once 'config/Database.php';
-
-?>
 <title>SimpleCRM</title>
 <script src="js/jquery.dataTables.min.js"></script>
 <script src="js/dataTables.bootstrap.min.js"></script>
@@ -21,14 +17,6 @@ include_once 'config/Database.php';
                                 class="glyphicon glyphicon-plus"></span></button>
                 </div>
             </div>
-        </div>
-        <div>
-            <table>
-                <tr id="filter_global">
-                    <td>Search: </td>
-                    <td><input type="text" class="global_filter" id="global_filter"></td>
-                </tr>
-            </table>
         </div>
         <table id="customerListing" class="table table-bordered table-striped">
             <thead>

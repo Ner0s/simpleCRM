@@ -4,14 +4,22 @@ $(document).ready(function () {
         "lengthChange": false,
         "processing": true,
         "serverSide": true,
-        "bFilter": false,
+        "searching": true,
+        // "bFilter": false,
         "ordering": false,
         "responsive": true,
         'serverMethod': 'post',
         "ajax": {
             url: "customer_action.php",
             type: "POST",
-            data: {action: 'listCustomer'},
+            // data: {action: 'listCustomer'},
+            data:function(d) {
+                if (d.search.value != null && d.search.value !== "" ) {
+                    d.action = 'findCustomer';
+                } else {
+                    d.action = 'listCustomer';
+                }
+            },
             dataType: "json"
         },
         "columnDefs": [
@@ -20,22 +28,6 @@ $(document).ready(function () {
             },
         ],
         "pageLength": 10
-    });
-
-    $('input.global_filter').on('keypress',function(e) {
-        if(e.which == 13) {
-            var action = 'findCustomer';
-            var search_query = $('#global_filter').val();
-            $.ajax({
-                url: 'customer_action.php',
-                method: "POST",
-                data: {action: action, search_query: search_query},
-                dataType: "json",
-                success: function (data) {
-                    customerRecords.clear().rows.add(data).draw();
-                }
-            });
-        }
     });
 
     $('#addCustomer').click(function () {

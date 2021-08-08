@@ -48,6 +48,61 @@ class Customer
         echo json_encode($output);
     }
 
+    public function findCustomer()
+    {
+        if ($this->search_value) {
+            $search_value = $this->search_value;
+            $sqlQuery = "
+			SELECT *  FROM " . $this->customerTable . "
+			WHERE (`customer_nr` LIKE ? 
+			OR `first_name` LIKE ? 
+			OR `last_name` LIKE ? 
+			OR `company` LIKE ? 
+			OR `address` LIKE ? 
+			OR `city` LIKE ? 
+			OR `country` LIKE ? 
+			OR `zip` LIKE ? 
+			OR `phone` LIKE ? 
+			OR `email` LIKE ?)";
+            $stmt = $this->conn->prepare($sqlQuery);
+
+            $search_value = htmlspecialchars(strip_tags($search_value));
+
+            $stmt->bind_param("issssssiis", $search_value, $search_value, $search_value, $search_value, $search_value, $search_value, $search_value, $search_value, $search_value, $search_value);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $displayRecords = $result->num_rows;
+            $records = array();
+            while ($customer = $result->fetch_assoc()) {
+                $rows = array();
+                $rows[] = $customer['customer_nr'];
+                $rows[] = ucfirst($customer['first_name']);
+                $rows[] = ucfirst($customer['last_name']);
+                $rows[] = $customer['company'];
+                $rows[] = $customer['address'];
+                $rows[] = $customer['city'];
+                $rows[] = $customer['country'];
+                $rows[] = $customer['zip'];
+                $rows[] = $customer['phone'];
+                $rows[] = $customer['email'];
+                $rows[] = $customer['create_date'];
+                $rows[] = '<button type="button" name="update" id="' . $customer["customer_nr"] . '" class="btn btn-warning btn-xs update"><span class="glyphicon glyphicon-edit" title="Edit"></span></button>';
+                $rows[] = '<button type="button" name="delete" id="' . $customer["customer_nr"] . '" class="btn btn-danger btn-xs delete" ><span class="glyphicon glyphicon-remove" title="Delete"></span></button>';
+                $records[] = $rows;
+            }
+
+            $output = array(
+                "draw" => intval($_POST["draw"]),
+                "iTotalRecords" => $displayRecords,
+                "iTotalDisplayRecords" => $displayRecords,
+                "data" => $records
+            );
+
+            echo json_encode($output);
+        }
+    }
+
     public function insert()
     {
 
@@ -89,61 +144,6 @@ class Customer
             $result = $stmt->get_result();
             $record = $result->fetch_assoc();
             echo json_encode($record);
-        }
-    }
-
-    public function findCustomer()
-    {
-        if ($this->search_query) {
-            $search_query = $this->search_query;
-            $sqlQuery = "
-			SELECT *  FROM " . $this->customerTable . "
-			WHERE (`customer_nr` LIKE ? 
-			OR `first_name` LIKE ? 
-			OR `last_name` LIKE ? 
-			OR `company` LIKE ? 
-			OR `address` LIKE ? 
-			OR `city` LIKE ? 
-			OR `country` LIKE ? 
-			OR `zip` LIKE ? 
-			OR `phone` LIKE ? 
-			OR `email` LIKE ?)";
-            $stmt = $this->conn->prepare($sqlQuery);
-
-            $search_query = htmlspecialchars(strip_tags($search_query));
-
-            $stmt->bind_param("issssssiis", $search_query, $search_query, $search_query, $search_query, $search_query, $search_query, $search_query, $search_query, $search_query, $search_query);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            $displayRecords = $result->num_rows;
-            $records = array();
-            while ($customer = $result->fetch_assoc()) {
-                $rows = array();
-                $rows[] = $customer['customer_nr'];
-                $rows[] = ucfirst($customer['first_name']);
-                $rows[] = ucfirst($customer['last_name']);
-                $rows[] = $customer['company'];
-                $rows[] = $customer['address'];
-                $rows[] = $customer['city'];
-                $rows[] = $customer['country'];
-                $rows[] = $customer['zip'];
-                $rows[] = $customer['phone'];
-                $rows[] = $customer['email'];
-                $rows[] = $customer['create_date'];
-                $rows[] = '<button type="button" name="update" id="' . $customer["customer_nr"] . '" class="btn btn-warning btn-xs update"><span class="glyphicon glyphicon-edit" title="Edit"></span></button>';
-                $rows[] = '<button type="button" name="delete" id="' . $customer["customer_nr"] . '" class="btn btn-danger btn-xs delete" ><span class="glyphicon glyphicon-remove" title="Delete"></span></button>';
-                $records[] = $rows;
-
-                $output = array(
-//                    "draw" => intval($_POST["draw"]),
-                    "iTotalRecords" => $displayRecords,
-                    "iTotalDisplayRecords" => $displayRecords,
-                    "data" => $records
-                );
-
-                echo json_encode($output);
-            }
         }
     }
 

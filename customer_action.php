@@ -30,7 +30,7 @@ if(!empty($_POST['action']) && $_POST['action'] == 'getCustomer') {
 }
 
 if(!empty($_POST['action']) && $_POST['action'] == 'findCustomer') {
-    $customer->search_query = $_POST["search_query"];
+    $customer->search_value = $_POST["search"]["value"];
     $customer->findCustomer();
 }
 
